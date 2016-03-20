@@ -174,7 +174,7 @@
     (define/public (get-mode) current-mode)
     (define/public (get-alpha) current-alpha)
     (define/public (get-externals) current-externals)
-    ;(define/public (get-sliders-container) SlidersContainer) ; for debugging purposes
+    (define/public (get-sliders-container) SlidersContainer) ; for debugging purposes
 
     ;; Get/Set the slider values & associated textfields
     (define/public (get-digits)
@@ -198,6 +198,18 @@
       (if (valid-hex? hex current-alpha)
         (refresh-on-hex-update hex)
         (void)))
+
+    ;; Get the active textfields -- the ones associated with the sliders & the hex value
+    (define/public (get-active-textfields)
+      (define active-sliders
+        (filter (λ (n) (send n is-shown?)) SlidersContainer))
+      (append
+        ;; Textfields associated with the sliders
+        (reverse
+          (map (λ (n) (last (send n get-children)))
+               (cdr (reverse active-sliders))))
+        ;; Textfield for the hex value
+        (list (get-hex-textfield SlidersContainer))))
 
     ;; Setter methods for use with user interaction
     (define/public (set-kb-active a)
@@ -261,7 +273,7 @@
 (define (get-alpha-digit SlidersContainer)
   (last (send (get-alpha-panel SlidersContainer) get-children)))
 
-(define (get-hex SlidersContainer)
+(define (get-hex-textfield SlidersContainer)
   (first (send (last SlidersContainer) get-children)))
 
 (define (get-color-patch SlidersContainer)
@@ -273,8 +285,8 @@
   (if alpha
     (begin
       (send (get-alpha-label SlidersContainer) set-label AlphaMsg)
-      (send (get-hex SlidersContainer) set-label AlphaHexMsg))
-    (send (get-hex SlidersContainer) set-label HexMsg)))
+      (send (get-hex-textfield SlidersContainer) set-label AlphaHexMsg))
+    (send (get-hex-textfield SlidersContainer) set-label HexMsg)))
 
 ;; Refreshes Slider labels
 (define (update-slider-labels mode SlidersContainer)
@@ -349,8 +361,8 @@
 
 (define (update-hex-textarea alpha color SlidersContainer)
   (if alpha
-    (send (get-hex SlidersContainer) set-value (send color as-rgba-hex))
-    (send (get-hex SlidersContainer) set-value (send color as-rgb-hex))))
+    (send (get-hex-textfield SlidersContainer) set-value (send color as-rgba-hex))
+    (send (get-hex-textfield SlidersContainer) set-value (send color as-rgb-hex))))
 
 (define (update-container mode alpha color widget SlidersContainer)
   (if (not (eq? widget 'hex)) (update-hex-textarea alpha color SlidersContainer) (void))

@@ -6,6 +6,8 @@
 (require "my-color.rkt")
 (require "sliders-panel.rkt")
 (require "text-preview.rkt")
+(require "keys-down.rkt")
+(require "color-picker-frame.rkt")
 
 ;; Variables holding internal state
 (define (using-mode?)
@@ -15,14 +17,16 @@
       ((= 1 mode) 'hsl)
       ((= 2 mode) 'cmyk)))
 (define (using-alpha?) (send alpha-selector get-value))
+(define keys (new keys-down%))
 
 (application:current-app-name AppName)
 
 ;; Define areas for the various controls
-(define mainwindow (new frame%
+(define mainwindow (new color-picker-frame%
                         [label AppName]
                         [width AppWidth]
-                        [height AppHeight]))
+                        [height AppHeight]
+                        [keyboard-state-holder keys]))
 
 ;; App is divided into two halves
 (define halves (new horizontal-pane%
@@ -134,6 +138,7 @@
                                  (send FGSliders set-alpha (using-alpha?))
                                  (send BGSliders set-alpha (using-alpha?)))]))
 
+(send mainwindow set-FGBG-sliders (list FGSliders BGSliders))
 (send mainwindow show #t)
 
 ; vim: expandtab:sw=2
