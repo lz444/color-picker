@@ -4,6 +4,7 @@
 (require "cp-resources.rkt")
 (require "my-color.rkt")
 (require "color-preview-patch.rkt")
+(require "text-field-with-select-all.rkt")
 
 (provide sliders-panel%)
 
@@ -95,7 +96,7 @@
     (define ColorValues
       (build-list 5
                   (λ (n)
-                     (new text-field%
+                     (new text-field-with-select-all%
                           [label #f]
                           [parent (list-ref SlidersContainer n)]
                           [init-value "0"]
@@ -109,7 +110,7 @@
                                  (refresh-on-digit-update)
                                  (void)))]))))
     ;; Finally additional controls for the hex value
-    (define HexValue (new text-field%
+    (define HexValue (new text-field-with-select-all%
                             [label AlphaHexMsg]
                             [parent (last SlidersContainer)]
                             [init-value "00CC00CC"]

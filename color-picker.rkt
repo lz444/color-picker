@@ -6,7 +6,6 @@
 (require "my-color.rkt")
 (require "sliders-panel.rkt")
 (require "text-preview.rkt")
-(require "keys-down.rkt")
 (require "color-picker-frame.rkt")
 
 ;; Variables holding internal state
@@ -17,7 +16,6 @@
       ((= 1 mode) 'hsl)
       ((= 2 mode) 'cmyk)))
 (define (using-alpha?) (send alpha-selector get-value))
-(define keys (new keys-down%))
 
 (application:current-app-name AppName)
 
@@ -25,8 +23,7 @@
 (define mainwindow (new color-picker-frame%
                         [label AppName]
                         [width AppWidth]
-                        [height AppHeight]
-                        [keyboard-state-holder keys]))
+                        [height AppHeight]))
 
 ;; App is divided into two halves
 (define halves (new horizontal-pane%
@@ -55,10 +52,14 @@
 (define textarea (new text-preview%
                       [parent text-and-help]
                       [text LoremIpsum]
-                      [font huge-control-font]))
+                      [font huge-control-font]
+                      [style '(no-focus)]))
 
+;; Not used currently, just set the height to 0 to make it invisible
 (define helpmsgs (new vertical-pane%
-                      [parent text-and-help]))
+                      [parent text-and-help]
+                      [min-height 0]
+                      [stretchable-height #f]))
 
 (define extra-buttons (new horizontal-pane%
                            [parent text-and-help]
